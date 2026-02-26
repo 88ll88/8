@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>539 三分區 - 4.html</title>
+    <script src="https://88l88.github.io/666/allData.js"></script>
+    <style>
+        :root { --bar-h: 48px; --th-h: 38px; --row-h: 32px; }
+        html { overflow-y: scroll; }
+        body { margin: 0; font-family: "Microsoft JhengHei", sans-serif; background: #fff; }
+        .top-bar { position: sticky; top: 0; z-index: 1000; height: var(--bar-h); background: #333; color: #fff; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; box-sizing: border-box; border-bottom: 2px solid #000; }
+        .page-title { font-size: 18px; font-weight: bold; }
+        .back-btn { padding: 5px 18px; background: #eee; color: #333; text-decoration: none; font-weight: bold; font-size: 13px; border-radius: 3px; }
+        .table-wrap { width: 1100px; margin: 0 auto; }
+        table { border-collapse: collapse; width: 100%; table-layout: fixed; border: 1px solid #999; }
+        thead th { position: sticky; top: var(--bar-h); z-index: 900; background: #e8f0fe; color: #333; font-size: 13px; border: 1px solid #ccc; height: var(--th-h); }
+        td { border: 1px solid #ccc; text-align: center; height: var(--row-h); font-size: 13px; }
+        .z1 { background: #e3f2fd; } .z2 { background: #fffde7; } .z3 { background: #fce4ec; }
+        .ball { font-weight: bold; color: #d32f2f; }
+    </style>
+</head>
+<body>
+<div class="top-bar"><div class="page-title">📊 今彩 539 - 三分區分析</div><a href="index.html" class="back-btn">⬅ 返回主表</a></div>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th width="95">期別</th>
+                <th>第一區(01-13)</th><th>第二區(14-26)</th><th>第三區(27-39)</th>
+                <th width="80">分佈比</th>
+                <th width="45">序</th>
+            </tr>
+        </thead>
+        <tbody id="b-data"></tbody>
+    </table>
+</div>
+<script>
+    function render() {
+        if (!window.all) return setTimeout(render, 100);
+        let bHtml = "";
+        all.slice(0, 100).forEach((row, idx) => {
+            const nums = row.slice(1, 6).map(Number);
+            let r1 = nums.filter(n => n <= 13).sort((a,b)=>a-b);
+            let r2 = nums.filter(n => n >= 14 && n <= 26).sort((a,b)=>a-b);
+            let r3 = nums.filter(n => n >= 27).sort((a,b)=>a-b);
+            bHtml += `<tr><td style="color:#666">${row[0]}</td>`;
+            bHtml += `<td class="z1">${r1.map(n=>`<span class="ball">${String(n).padStart(2,'0')}</span>`).join(' ')}</td>`;
+            bHtml += `<td class="z2">${r2.map(n=>`<span class="ball">${String(n).padStart(2,'0')}</span>`).join(' ')}</td>`;
+            bHtml += `<td class="z3">${r3.map(n=>`<span class="ball">${String(n).padStart(2,'0')}</span>`).join(' ')}</td>`;
+            bHtml += `<td style="font-weight:bold">${r1.length}:${r2.length}:${r3.length}</td>`;
+            bHtml += `<td style="color:#999">${idx+1}</td></tr>`;
+        });
+        document.getElementById('b-data').innerHTML = bHtml;
+    }
+    render();
+</script>
+</body>
+</html>
