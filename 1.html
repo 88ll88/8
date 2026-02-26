@@ -2,55 +2,73 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>539 單雙比例 - 專業分析版</title>
+    <title>539 單雙比例 - 1.html</title>
     <script src="https://88l88.github.io/666/allData.js"></script>
     <style>
-        /* 全域統一設定，確保各分頁間無縫切換 */
+        /* 強制規格統一：確保所有分頁上下左右完全對齊 */
         :root { 
-            --bar-height: 48px; 
-            --th-height: 36px;
-            --odd-bg: #ffcccc; 
-            --even-bg: #fff9c4; 
-            --green: #99cc66; 
+            --bar-h: 48px;     /* 頂部黑條高度 */
+            --th-h: 38px;      /* 標題列高度 */
+            --row-h: 32px;     /* 數據列高度 */
+            --odd-bg: #ffcccc; /* 單數底色 (淡紅) */
+            --even-bg: #fff9c4;/* 雙數底色 (淡黃) */
+            --green: #99cc66;  /* 走勢落點色 (綠) */
         }
-        body { margin: 0; padding: 0; font-family: "Microsoft JhengHei", Arial, sans-serif; background: #fff; overflow-y: scroll; }
-        
-        /* 1. 頂部工具列：高度鎖定 48px */
+
+        /* 預留滾動條寬度，防止切換頁面時左右抖動 */
+        html { overflow-y: scroll; }
+
+        body { 
+            margin: 0; padding: 0; 
+            font-family: "Microsoft JhengHei", sans-serif; 
+            background: #fff; 
+        }
+
+        /* 頂部工具列：左名稱、右返回 */
         .top-bar { 
             position: sticky; top: 0; z-index: 1000; 
-            height: var(--bar-height); background: #333; color: #fff; 
+            height: var(--bar-h); background: #333; color: #fff; 
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 20px; box-sizing: border-box;
+            border-bottom: 2px solid #000;
         }
         .page-title { font-size: 18px; font-weight: bold; }
         .back-btn { 
-            padding: 4px 16px; background: #eee; color: #333; 
+            padding: 5px 18px; background: #eee; color: #333; 
             text-decoration: none; font-weight: bold; font-size: 13px; border-radius: 3px; 
         }
         .back-btn:hover { background: #fff; }
 
-        /* 2. 表格容器：寬度鎖定 1100px */
+        /* 表格總寬鎖定 1100px */
         .table-wrap { width: 1100px; margin: 0 auto; }
         table { border-collapse: collapse; width: 100%; table-layout: fixed; border: 1px solid #999; }
         
-        /* 3. 標題列：高度鎖定 36px，吸頂位置鎖定 48px */
+        /* 標題列：位置鎖定在黑條下方 */
         thead th { 
-            position: sticky; top: var(--bar-height); z-index: 900;
+            position: sticky; top: var(--bar-h); z-index: 900;
             background: #e8f0fe; color: #333; font-size: 13px;
-            border: 1px solid #ccc; height: var(--th-height); padding: 0;
+            border: 1px solid #ccc; height: var(--th-h); padding: 0;
+            box-sizing: border-box;
         }
 
-        /* 4. 數據列：高度鎖定 32px */
-        td { border: 1px solid #ccc; text-align: center; height: 32px; font-size: 13px; padding: 0; }
+        /* 數據格：高度與字體大小嚴格統一 */
+        td { 
+            border: 1px solid #ccc; text-align: center; 
+            height: var(--row-h); font-size: 13px; padding: 0; 
+            box-sizing: border-box;
+        }
 
-        /* 顏色與寬度微調 */
+        /* 寬度分配：鎖定像素值 */
+        .w-date { width: 95px; } 
+        .w-num  { width: 35px; }
+        .w-ratio{ width: 65px; background: #f0f4f8; font-weight: bold; }
+        .w-idx  { width: 45px; color: #999; }
+
+        /* 顏色與效果 */
         .bg-odd { background: var(--odd-bg); color: #d00; font-weight: bold; }
         .bg-even { background: var(--even-bg); color: #663300; font-weight: bold; }
-        .hit-trend { background: var(--green) !important; font-weight: bold; color: #000; }
-        .col-num { color: #9933cc; font-weight: bold; background: #fafafa; }
-        .w-date { width: 95px; } 
-        .w-idx { width: 45px; }
-        .w-ratio { width: 60px; background: #d1d9e6; }
+        .hit-trend { background: var(--green) !important; color: #000; font-weight: bold; }
+        .col-num { color: #9933cc; font-weight: bold; background: #fafafa; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -65,8 +83,8 @@
         <thead>
             <tr>
                 <th class="w-date">期別</th>
-                <th>號1</th><th>號2</th><th>號3</th><th>號4</th><th>號5</th>
-                <th>獎1</th><th>獎2</th><th>獎3</th><th>獎4</th><th>獎5</th>
+                <th class="w-num">號1</th><th class="w-num">號2</th><th class="w-num">號3</th><th class="w-num">號4</th><th class="w-num">號5</th>
+                <th class="w-num">獎1</th><th class="w-num">獎2</th><th class="w-num">獎3</th><th class="w-num">獎4</th><th class="w-num">獎5</th>
                 <th class="w-ratio">單雙比</th>
                 <th>0:5</th><th>1:4</th><th>2:3</th><th>3:2</th><th>4:1</th><th>5:0</th>
                 <th class="w-idx">序</th>
@@ -79,28 +97,43 @@
 <script>
     function render() {
         if (!window.all) return setTimeout(render, 100);
-        const data = all.slice(0, 100);
+        const data = all.slice(0, 100); // 顯示最近 100 期
         let bHtml = "";
+
         data.forEach((row, idx) => {
             const nums = row.slice(1, 6).map(Number);
             let oddCount = 0;
             let cells = "";
+
+            // 處理獎1~獎5的單雙判斷
             nums.forEach(n => {
                 let isOdd = (n % 2 !== 0);
                 if(isOdd) oddCount++;
                 cells += `<td class="${isOdd ? 'bg-odd' : 'bg-even'}">${isOdd ? '單' : '雙'}</td>`;
             });
+
             const ratio = `${oddCount}:${5 - oddCount}`;
             
-            bHtml += `<tr><td style="color:#666">${row[0]}</td>`; 
-            nums.forEach(n => bHtml += `<td class="col-num">${String(n).padStart(2,'0')}</td>`);
-            bHtml += cells;
-            bHtml += `<td style="font-weight:bold">${ratio}</td>`;
+            bHtml += `<tr>`;
+            bHtml += `<td style="color:#666">${row[0]}</td>`; // 期別
             
-            ["0:5", "1:4", "2:3", "3:2", "4:1", "5:0"].forEach(r => {
+            // 原始獎號區
+            nums.forEach(n => bHtml += `<td class="col-num">${String(n).padStart(2,'0')}</td>`);
+            
+            // 單雙字樣區
+            bHtml += cells;
+            
+            // 單雙比例值
+            bHtml += `<td class="w-ratio">${ratio}</td>`;
+            
+            // 單雙分佈走勢 (0:5 ~ 5:0)
+            const ratioOptions = ["0:5", "1:4", "2:3", "3:2", "4:1", "5:0"];
+            ratioOptions.forEach(r => {
                 bHtml += `<td class="${ratio === r ? 'hit-trend' : ''}">${ratio === r ? r : ''}</td>`;
             });
-            bHtml += `<td>${idx + 1}</td></tr>`;
+
+            bHtml += `<td>${idx + 1}</td>`; // 序號
+            bHtml += `</tr>`;
         });
         document.getElementById('b-data').innerHTML = bHtml;
     }
