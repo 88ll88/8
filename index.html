@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200">
+    <title>539 大數據分析系統 - 號碼走勢</title>
+    <script src="https://88l88.github.io/666/allData.js"></script>
+    <style>
+        :root { --blue: #e8f0fe; --yellow: #fff9c4; --hit: #ff3300; --border: #ccc; }
+        body { margin: 0; font-family: "Microsoft JhengHei", sans-serif; background: #f4f4f4; }
+
+        /* 頂部按鈕選單 - 這是導航核心 */
+        .nav-wrap {
+            position: sticky; top: 0; z-index: 300;
+            background: #fff; border-bottom: 2px solid #000;
+            padding: 10px 0; display: flex; justify-content: center; gap: 6px;
+        }
+        .nav-btn { 
+            padding: 6px 15px; border: 1px solid #999; background: #fff; 
+            cursor: pointer; font-size: 13px; font-weight: bold; border-radius: 3px;
+            text-decoration: none; color: #333;
+        }
+        .nav-btn:hover { background: #f0f0f0; }
+        .nav-btn.active { background: #003399; color: #fff; border-color: #003399; }
+
+        .table-wrap { width: fit-content; margin: 20px auto; }
+        table { border-collapse: collapse; table-layout: fixed; width: 1100px; background: #fff; border: 1px solid #999; }
+        th, td { text-align: center; height: 32px; font-size: 13px; border: 1px solid var(--border); }
+
+        /* 【首列】鎖死固定：黑底白字 */
+        .head-main th {
+            position: sticky; top: 52px; z-index: 250; 
+            background: #000 !important; color: #fff !important; font-weight: bold;
+        }
+
+        /* 【次列】100次數：黃底紅字 */
+        .head-sub th {
+            position: sticky; top: 84px; z-index: 240; 
+            background: #ffffcc !important; color: #d00 !important; font-weight: bold;
+        }
+
+        /* 【尾列】鎖死固定：黑底白字 */
+        tfoot tr td {
+            position: sticky; bottom: 0; z-index: 250; 
+            background: #000 !important; color: #fff !important; font-weight: bold;
+        }
+
+        /* 走勢圖顏色 */
+        .z1 { background: var(--blue); } .z2 { background: var(--yellow); } .z3 { background: var(--blue); }
+        .ball { display: inline-block; width: 22px; height: 22px; line-height: 22px; background: var(--hit); color: #fff; border-radius: 50%; font-weight: bold; }
+        .miss { color: #d0d0d0; font-size: 11px; }
+        .w-date { width: 95px; } .w-num { width: 25px; }
+    </style>
+</head>
+<body>
+
+<div class="nav-wrap">
+    <a href="index.html" class="nav-btn active">號碼走勢</a>
+    <a href="1-odd.html" class="nav-btn">單雙比例</a>
+    <a href="2-head.html" class="nav-btn">頭數分析</a>
+    <a href="3-tail.html" class="nav-btn">尾數分析</a>
+    <a href="4-miss.html" class="nav-btn">遺漏統計</a>
+    <a href="#" class="nav-btn">和值振幅</a>
+</div>
+
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr class="head-main" id="h-main"></tr>
+            <tr class="head-sub" id="h-sub"></tr>
+        </thead>
+        <tbody id="b-data"></tbody>
+        <tfoot>
+            <tr id="f-row"></tr>
+        </tfoot>
+    </table>
+</div>
+
+<script>
+    function render() {
+        if (!window.all) return setTimeout(render, 100);
+        
+        const hMain = document.getElementById('h-main'), hSub = document.getElementById('h-sub'), bData = document.getElementById('b-data'), fRow = document.getElementById('f-row');
+        const data = all.slice(0, 100);
+
+        // 1. 統計 100 天次數
+        let counts = Array(40).fill(0);
+        data.forEach(row => row.slice(1, 6).forEach(n => counts[Number(n)]++));
+
+        // 2. 渲染【首列 & 尾列】(黑底外殼 01-39)
+        let shellHtml = '<th class="w-date">日期</th>';
+        for(let i=1; i<=39; i++) shellHtml += `<th class="w-num">${String(i).padStart(2,'0')}</th>`;
+        shellHtml += '<th>序</th>';
+        hMain.innerHTML = shellHtml;
+        fRow.innerHTML = shellHtml.replace(/th/g, 'td'); // 尾列內容同首列
+
+        // 3. 渲染【次列】(100次數)
+        let subHtml = '<th>100天次數</th>';
+        for(let i=1; i<=39; i++) subHtml += `<th>${counts[i]}</th>`;
+        subHtml += '<th>#</th>';
+        hSub.innerHTML = subHtml;
+
+        // 4. 渲染數據區 (號碼走勢)
+        let bHtml = "";
+        data.forEach((row, idx) => {
+            const nums = row.slice(1, 6).map(Number);
+            bHtml += `<tr><td style="color:#666">${row[0]}</td>`;
+            for (let i = 1; i <= 39; i++) {
+                let z = i <= 13 ? 'z1' : (i <= 26 ? 'z2' : 'z3');
+                if (nums.includes(i)) {
+                    bHtml += `<td class="${z}"><span class="ball">${String(i).padStart(2,'0')}</span></td>`;
+                } else {
+                    bHtml += `<td class="${z} miss">${String(i).padStart(2,'0')}</td>`;
+                }
+            }
+            bHtml += `<td style="font-weight:bold">${idx + 1}</td></tr>`;
+        });
+        bData.innerHTML = bHtml;
+    }
+    render();
+</script>
+</body>
+</html>
