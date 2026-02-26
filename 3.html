@@ -15,7 +15,8 @@
         table { border-collapse: collapse; width: 100%; table-layout: fixed; border: 1px solid #999; }
         thead th { position: sticky; top: var(--bar-h); z-index: 900; background: #e8f0fe; color: #333; font-size: 12px; border: 1px solid #ccc; height: var(--th-h); }
         td { border: 1px solid #ccc; text-align: center; height: var(--row-h); font-size: 12px; }
-        .hit-tail { background: var(--hit); color: #fff; font-weight: bold; border-radius: 3px; }
+        .col-num { color: #9933cc; font-weight: bold; background: #fafafa; }
+        .hit-tail { background: var(--hit); color: #fff; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -24,8 +25,8 @@
     <table>
         <thead>
             <tr>
-                <th width="90">日期</th>
-                <th colspan="5">獎號</th>
+                <th width="90">期別</th>
+                <th colspan="5">獎號區</th>
                 <th>0尾</th><th>1尾</th><th>2尾</th><th>3尾</th><th>4尾</th><th>5尾</th><th>6尾</th><th>7尾</th><th>8尾</th><th>9尾</th>
                 <th width="40">序</th>
             </tr>
@@ -41,7 +42,7 @@
             const nums = row.slice(1, 6).map(Number);
             const tails = nums.map(n => n % 10);
             bHtml += `<tr><td style="color:#666">${row[0]}</td>`;
-            nums.forEach(n => bHtml += `<td style="color:#666">${String(n).padStart(2,'0')}</td>`);
+            nums.forEach(n => bHtml += `<td class="col-num">${String(n).padStart(2,'0')}</td>`);
             for(let i=0; i<=9; i++) {
                 let count = tails.filter(t => t === i).length;
                 bHtml += `<td class="${count>0?'hit-tail':''}">${count>0?count:''}</td>`;
@@ -53,5 +54,4 @@
     render();
 </script>
 </body>
-
 </html>

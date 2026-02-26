@@ -15,8 +15,7 @@
         table { border-collapse: collapse; width: 100%; table-layout: fixed; border: 1px solid #999; }
         thead th { position: sticky; top: var(--bar-h); z-index: 900; background: #e8f0fe; color: #333; font-size: 13px; border: 1px solid #ccc; height: var(--th-h); }
         td { border: 1px solid #ccc; text-align: center; height: var(--row-h); font-size: 13px; }
-        .w-date { width: 95px; } .w-num { width: 35px; } .w-idx { width: 45px; }
-        .h0 { background: #e8f5e9; } .h1 { background: #fff3e0; } .h2 { background: #f3e5f5; } .h3 { background: #e1f5fe; }
+        .col-num { color: #9933cc; font-weight: bold; background: #fafafa; }
         .hit-box { background: var(--hit) !important; font-weight: bold; }
     </style>
 </head>
@@ -26,10 +25,10 @@
     <table>
         <thead>
             <tr>
-                <th class="w-date">日期</th>
+                <th width="95">期別</th>
                 <th colspan="5">獎號區</th>
                 <th>0頭</th><th>1頭</th><th>2頭</th><th>3頭</th>
-                <th class="w-idx">序</th>
+                <th width="45">序</th>
             </tr>
         </thead>
         <tbody id="b-data"></tbody>
@@ -44,9 +43,9 @@
             let heads = {0:0, 1:0, 2:0, 3:0};
             nums.forEach(n => heads[Math.floor(n/10)]++);
             bHtml += `<tr><td style="color:#666">${row[0]}</td>`;
-            nums.forEach(n => bHtml += `<td style="color:#9933cc">${String(n).padStart(2,'0')}</td>`);
+            nums.forEach(n => bHtml += `<td class="col-num">${String(n).padStart(2,'0')}</td>`);
             [0,1,2,3].forEach(h => {
-                bHtml += `<td class="h${h} ${heads[h]>0?'hit-box':''}">${heads[h]>0?heads[h]+'個':''}</td>`;
+                bHtml += `<td class="${heads[h]>0?'hit-box':''}">${heads[h]>0?heads[h]+'個':''}</td>`;
             });
             bHtml += `<td style="color:#999">${idx+1}</td></tr>`;
         });
@@ -55,5 +54,4 @@
     render();
 </script>
 </body>
-
 </html>
