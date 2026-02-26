@@ -2,124 +2,55 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>539 專業走勢主表 - index.html</title>
+    <title>539 頭數分析 - 2.html</title>
     <script src="https://88l88.github.io/666/allData.js"></script>
     <style>
-        /* 與 1.html 完全一致的規格鎖定 */
-        :root { 
-            --bar-h: 48px; 
-            --th-h: 38px;
-            --row-h: 32px;
-            --blue: #e8f0fe; --yellow: #fff9c4; --hit: #ff3300;
-        }
-        html { overflow-y: scroll; } /* 強制顯示滾動條，防止位移 */
-        body { margin: 0; padding: 0; font-family: "Microsoft JhengHei", sans-serif; background: #fff; }
-
-        /* 頂部工具列：主頁放置功能選單 */
-        .top-bar { 
-            position: sticky; top: 0; z-index: 1000; 
-            height: var(--bar-h); background: #333; color: #fff; 
-            display: flex; justify-content: center; align-items: center;
-            gap: 10px; padding: 0 20px; box-sizing: border-box;
-            border-bottom: 2px solid #000;
-        }
-        
-        /* 導航按鈕樣式 */
-        .nav-link {
-            padding: 4px 12px; background: #555; color: #fff;
-            text-decoration: none; font-size: 13px; font-weight: bold; border-radius: 3px;
-            transition: 0.2s;
-        }
-        .nav-link:hover { background: #eee; color: #000; }
-        .nav-link.active { background: #003399; color: #fff; border: 1px solid #fff; }
-
-        /* 表格總寬鎖定 1100px */
+        :root { --bar-h: 48px; --th-h: 38px; --row-h: 32px; --hit: #66cc66; }
+        html { overflow-y: scroll; }
+        body { margin: 0; font-family: "Microsoft JhengHei", sans-serif; background: #fff; }
+        .top-bar { position: sticky; top: 0; z-index: 1000; height: var(--bar-h); background: #333; color: #fff; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; box-sizing: border-box; border-bottom: 2px solid #000; }
+        .page-title { font-size: 18px; font-weight: bold; }
+        .back-btn { padding: 5px 18px; background: #eee; color: #333; text-decoration: none; font-weight: bold; font-size: 13px; border-radius: 3px; }
         .table-wrap { width: 1100px; margin: 0 auto; }
         table { border-collapse: collapse; width: 100%; table-layout: fixed; border: 1px solid #999; }
-        
-        /* 標題列：01-39 號碼標題 */
-        .head-main th { 
-            position: sticky; top: var(--bar-h); z-index: 900;
-            background: #000; color: #fff; font-size: 13px;
-            height: var(--th-h); border: 1px solid #444;
-        }
-        /* 次列：100次數 */
-        .head-sub th { 
-            position: sticky; top: calc(var(--bar-h) + var(--th-h)); z-index: 850;
-            background: #ffffcc; color: #d00; font-size: 12px;
-            height: 30px; border: 1px solid #ccc;
-        }
-
+        thead th { position: sticky; top: var(--bar-h); z-index: 900; background: #e8f0fe; color: #333; font-size: 13px; border: 1px solid #ccc; height: var(--th-h); }
         td { border: 1px solid #ccc; text-align: center; height: var(--row-h); font-size: 13px; }
-
-        /* 走勢圖專用色 */
-        .z1 { background: var(--blue); } .z2 { background: var(--yellow); } .z3 { background: var(--blue); }
-        .ball { display: inline-block; width: 22px; height: 22px; line-height: 22px; background: var(--hit); color: #fff; border-radius: 50%; font-weight: bold; }
-        .miss { color: #d0d0d0; font-size: 11px; }
-
-        /* 欄位寬度鎖定 */
-        .w-date { width: 95px; } 
-        .w-num  { width: 24px; }
-        .w-idx  { width: 45px; color: #999; }
+        .w-date { width: 95px; } .w-num { width: 35px; } .w-idx { width: 45px; }
+        .h0 { background: #e8f5e9; } .h1 { background: #fff3e0; } .h2 { background: #f3e5f5; } .h3 { background: #e1f5fe; }
+        .hit-box { background: var(--hit) !important; font-weight: bold; }
     </style>
 </head>
 <body>
-
-<div class="top-bar">
-    <a href="index.html" class="nav-link active">號碼走勢</a>
-    <a href="1.html" class="nav-link">單雙比例</a>
-    <a href="2.html" class="nav-link">頭數分析</a>
-    <a href="3.html" class="nav-link">尾數分析</a>
-    <a href="4.html" class="nav-link">三分區</a>
-    <a href="5.html" class="nav-link">遺漏統計</a>
-</div>
-
+<div class="top-bar"><div class="page-title">📊 今彩 539 - 頭數分析</div><a href="index.html" class="back-btn">⬅ 返回主表</a></div>
 <div class="table-wrap">
     <table>
         <thead>
-            <tr class="head-main" id="h-main"></tr>
-            <tr class="head-sub" id="h-sub"></tr>
+            <tr>
+                <th class="w-date">期別</th>
+                <th colspan="5">獎號區</th>
+                <th>0頭</th><th>1頭</th><th>2頭</th><th>3頭</th>
+                <th class="w-idx">序</th>
+            </tr>
         </thead>
         <tbody id="b-data"></tbody>
     </table>
 </div>
-
 <script>
     function render() {
         if (!window.all) return setTimeout(render, 100);
-        const data = all.slice(0, 100);
-        const hMain = document.getElementById('h-main'), hSub = document.getElementById('h-sub'), bData = document.getElementById('b-data');
-
-        // 1. 計算 100 天次數
-        let counts = Array(40).fill(0);
-        data.forEach(row => row.slice(1, 6).forEach(n => counts[Number(n)]++));
-
-        // 2. 渲染標題列
-        let hHtml = '<th class="w-date">日期</th>';
-        for(let i=1; i<=39; i++) hHtml += `<th class="w-num">${String(i).padStart(2,'0')}</th>`;
-        hMain.innerHTML = hHtml + '<th class="w-idx">序</th>';
-
-        // 3. 渲染次數列
-        let sHtml = '<th>100次數</th>';
-        for(let i=1; i<=39; i++) sHtml += `<th>${counts[i]}</th>`;
-        hSub.innerHTML = sHtml + '<th>#</th>';
-
-        // 4. 渲染數據
         let bHtml = "";
-        data.forEach((row, idx) => {
+        all.slice(0, 100).forEach((row, idx) => {
             const nums = row.slice(1, 6).map(Number);
-            bHtml += `<tr><td style="color:#666; font-size:12px">${row[0]}</td>`;
-            for (let i = 1; i <= 39; i++) {
-                let z = i <= 13 ? 'z1' : (i <= 26 ? 'z2' : 'z3');
-                if (nums.includes(i)) {
-                    bHtml += `<td class="${z}"><span class="ball">${String(i).padStart(2,'0')}</span></td>`;
-                } else {
-                    bHtml += `<td class="${z} miss">${String(i).padStart(2,'0')}</td>`;
-                }
-            }
-            bHtml += `<td style="color:#999">${idx + 1}</td></tr>`;
+            let heads = {0:0, 1:0, 2:0, 3:0};
+            nums.forEach(n => heads[Math.floor(n/10)]++);
+            bHtml += `<tr><td style="color:#666">${row[0]}</td>`;
+            nums.forEach(n => bHtml += `<td style="color:#9933cc">${String(n).padStart(2,'0')}</td>`);
+            [0,1,2,3].forEach(h => {
+                bHtml += `<td class="h${h} ${heads[h]>0?'hit-box':''}">${heads[h]>0?heads[h]+'個':''}</td>`;
+            });
+            bHtml += `<td style="color:#999">${idx+1}</td></tr>`;
         });
-        bData.innerHTML = bHtml;
+        document.getElementById('b-data').innerHTML = bHtml;
     }
     render();
 </script>
