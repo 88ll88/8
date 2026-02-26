@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>539 尾數分析 - 3.html</title>
+    <script src="https://88l88.github.io/666/allData.js"></script>
+    <style>
+        :root { --bar-h: 48px; --th-h: 38px; --row-h: 32px; --hit: #ffaa00; }
+        html { overflow-y: scroll; }
+        body { margin: 0; font-family: "Microsoft JhengHei", sans-serif; background: #fff; }
+        .top-bar { position: sticky; top: 0; z-index: 1000; height: var(--bar-h); background: #333; color: #fff; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; box-sizing: border-box; border-bottom: 2px solid #000; }
+        .page-title { font-size: 18px; font-weight: bold; }
+        .back-btn { padding: 5px 18px; background: #eee; color: #333; text-decoration: none; font-weight: bold; font-size: 13px; border-radius: 3px; }
+        .table-wrap { width: 1100px; margin: 0 auto; }
+        table { border-collapse: collapse; width: 100%; table-layout: fixed; border: 1px solid #999; }
+        thead th { position: sticky; top: var(--bar-h); z-index: 900; background: #e8f0fe; color: #333; font-size: 12px; border: 1px solid #ccc; height: var(--th-h); }
+        td { border: 1px solid #ccc; text-align: center; height: var(--row-h); font-size: 12px; }
+        .hit-tail { background: var(--hit); color: #fff; font-weight: bold; border-radius: 3px; }
+    </style>
+</head>
+<body>
+<div class="top-bar"><div class="page-title">📊 今彩 539 - 尾數分析</div><a href="index.html" class="back-btn">⬅ 返回主表</a></div>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th width="90">期別</th>
+                <th colspan="5">獎號</th>
+                <th>0尾</th><th>1尾</th><th>2尾</th><th>3尾</th><th>4尾</th><th>5尾</th><th>6尾</th><th>7尾</th><th>8尾</th><th>9尾</th>
+                <th width="40">序</th>
+            </tr>
+        </thead>
+        <tbody id="b-data"></tbody>
+    </table>
+</div>
+<script>
+    function render() {
+        if (!window.all) return setTimeout(render, 100);
+        let bHtml = "";
+        all.slice(0, 100).forEach((row, idx) => {
+            const nums = row.slice(1, 6).map(Number);
+            const tails = nums.map(n => n % 10);
+            bHtml += `<tr><td style="color:#666">${row[0]}</td>`;
+            nums.forEach(n => bHtml += `<td style="color:#666">${String(n).padStart(2,'0')}</td>`);
+            for(let i=0; i<=9; i++) {
+                let count = tails.filter(t => t === i).length;
+                bHtml += `<td class="${count>0?'hit-tail':''}">${count>0?count:''}</td>`;
+            }
+            bHtml += `<td style="color:#999">${idx+1}</td></tr>`;
+        });
+        document.getElementById('b-data').innerHTML = bHtml;
+    }
+    render();
+</script>
+</body>
+</html>
