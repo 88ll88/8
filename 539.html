@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* 樣式設定：黑底白字標題 + 紅圈號碼 */
+        body { margin: 0; background: #000; font-family: sans-serif; }
+        .container { background: #fff; width: 100%; max-width: 600px; margin: 0 auto; min-height: 100vh; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        
+        /* 首列標題：全黑底白字 */
+        thead th { 
+            position: sticky; top: 0; background: #000 !important; color: #fff !important; 
+            height: 40px; font-size: 16px; z-index: 10;
+        }
+
+        td { border-bottom: 1px solid #eee; text-align: center; height: 45px; color: #333; }
+        
+        /* 紅圈白字號碼 (落球序) */
+        .ball {
+            display: inline-block; width: 28px; height: 28px; line-height: 28px;
+            background-color: #ff0000; color: #fff; border-radius: 50%;
+            font-weight: bold; font-size: 14px; margin: 0 2px;
+        }
+
+        .date-col { width: 30%; font-size: 14px; }
+        .num-col { width: 55%; }
+        .idx-col { width: 15%; font-weight: bold; color: #999; }
+        
+        .loading { padding: 50px; text-align: center; color: #000; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <table>
+        <thead>
+            <tr>
+                <th class="date-col">日期</th>
+                <th class="num-col">開獎落球序</th>
+                <th class="idx-col">#</th>
+            </tr>
+        </thead>
+        <tbody id="data-list">
+            <tr><td colspan="3" class="loading">正在連線至 2007-2026 數據庫...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://666539.github.io/data/all_history.js"></script>
+
+<script>
+    window.onload = function() {
+        const tbody = document.getElementById('data-list');
+        
+        // 檢查數據是否載入成功 (假設變數名為 all)
+        if (typeof all === 'undefined') {
+            tbody.innerHTML = '<tr><td colspan="3">載入失敗！請檢查網路。</td></tr>';
+            return;
+        }
+
+        let rows = "";
+        // 顯示 2007 至今的所有數據
+        all.forEach((item, i) => {
+            // item[0] 是日期, item[1]-[5] 是落球序
+            const nums = [item[1], item[2], item[3], item[4], item[5]];
+            const ballHtml = nums.map(n => `<span class="ball">${n}</span>`).join('');
+            
+            // 序號計算
+            const idx = all.length - i;
+
+            rows += `<tr>
+                <td class="date-col">${item[0]}</td>
+                <td class="num-col">${ballHtml}</td>
+                <td class="idx-col">${idx}</td>
+            </tr>`;
+        });
+        
+        tbody.innerHTML = rows;
+    };
+</script>
+
+</body>
+</html>
