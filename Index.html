@@ -2,8 +2,8 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<!-- 鎖定手機/平板視窗 Viewport，防止瀏覽器自行放大 -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<!-- 關鍵修正 1：鎖定視窗寬度，禁止瀏覽器預設放大 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
 <title>539 走勢圖</title>
 <style>
 * {
@@ -17,31 +17,18 @@ html, body {
     background: #000;
     width: 100%;
     height: 100%;
-    overflow: hidden; /* 防止瀏覽器雙重滾動條導致畫面爆掉 */
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
+    overflow: hidden; /* 鎖定 body 不會產生雙重滾動條導致畫面撐大 */
 }
 
-/* 外層容器：鎖定標準版面寬度，強行限制在畫面中央，解決瀏覽器撐太大的問題 */
-.app-container {
-    width: 100%;
-    max-width: 480px; /* 模擬標準 App 螢幕寬度 */
-    height: 100vh;
-    background: #000;
-    position: relative;
-    overflow: hidden;
-}
-
-/* 內層走勢圖區域：透過自動縮放（Zoom）適應螢幕 */
+/* 外層容器：改用 max-width: 100% 確保瀏覽器內絕不超出畫面 */
 .wrapper {
     display: flex;
-    width: 1204.71px;
-    height: 100%;
+    width: 100%;
+    max-width: 1205px;
+    height: 100vh;
     margin: 0 auto;
-    box-sizing: border-box;
     justify-content: center;
-    transform-origin: top left;
+    box-sizing: border-box;
 }
 
 #leftSidebar {
@@ -64,12 +51,12 @@ html, body {
     margin-left: 2px;
 }
 
-/* 限制表格顯示高度並產生內部捲軸 */
+/* 關鍵修正 2：表格容器隨螢幕高度自適應，不再死板固定 585px */
 .table-container {
     height: 100%;
     max-height: 100vh; 
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
     position: relative;
     background: #E8E8D0;
     width: 100%;
@@ -115,7 +102,6 @@ html, body {
 #thead td {
     width: 25px;
     height: 25px;
-    border: 0.3px solid transparent;
     color: #fff;
     text-align: center;
     vertical-align: middle;
@@ -126,7 +112,6 @@ html, body {
     height: 18px;
     font-size: 13px !important;
     font-weight: bold !important;
-    border: 0px solid #fff;
     padding: 0;
     margin: 0 auto;
 }
@@ -137,14 +122,13 @@ html, body {
     color: #fff;
     text-align: center;
     vertical-align: middle;
-    border: 0.3px solid #fff;
     padding: 0;
 }
 
 /* 尾列樣式 */
 #tfoot td {
     width: 25px;
-    height: 20px;
+    height: 18px;
     text-align: center;
     vertical-align: middle;
     border: 0.3px solid #fff;
@@ -162,13 +146,13 @@ html, body {
 
 .cap {
     width: 110px;
-    height: 24px;
+    height: 18px;
     border-radius: 6px;
     line-height: 24px;
     margin: 0 auto;
 }
 
-/* 球體蓋在走勢線與豎線上，防止貫穿 */
+/* 置頂號碼球，防止被背景線穿越 */
 .ball {
     width: 24px;
     height: 24px;
@@ -189,7 +173,7 @@ html, body {
     color: #fff;
 }
 
-/* 開出號碼紅圈：蓋住貫穿線，可點擊高亮 */
+/* 開出號碼紅圈：置頂 z-index，蓋在線條上方 */
 .ball2 {
     width: 18px;
     height: 18px;
@@ -203,10 +187,10 @@ html, body {
 
 /* 尾列總次數小圓圈 */
 .tfoot-ball {
-    width: 18px;
-    height: 18px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    line-height: 18px;
+    line-height: 24px;
     margin: 0 auto;
     background: #fff;
     color: #000;
@@ -225,54 +209,26 @@ html, body {
 </head>
 <body>
 
-  <!-- 包裹在 App 模擬器外框中，徹底修正瀏覽器超大問題 -->
-  <div class="app-container">
-      <div class="wrapper">
-          <div id="leftSidebar"></div>    
-          
-          <div class="main-content">
-              <div class="table-container">
-                  <table id="table">
-                      <thead id="thead"></thead>
-                      <tbody id="tbody"></tbody>
-                      <tfoot id="tfoot"></tfoot>
-                  </table>
-              </div>
+  <div class="wrapper">
+      <div id="leftSidebar"></div>    
+      
+      <div class="main-content">
+          <div class="table-container">
+              <table id="table">
+                  <thead id="thead"></thead>
+                  <tbody id="tbody"></tbody>
+                  <tfoot id="tfoot"></tfoot>
+              </table>
           </div>
-
-          <div id="rightSidebar"></div>
       </div>
+
+      <div id="rightSidebar"></div>
   </div>
 
 <script>
-// 強制將 1204px 的版面動態縮放至視窗/App 最佳大小
-function fitLayout() {
-    var appContainer = document.querySelector('.app-container');
-    var wrapper = document.querySelector('.wrapper');
-    if (!appContainer || !wrapper) return;
-
-    var containerWidth = window.innerWidth;
-    if (containerWidth > 600) {
-        // 大螢幕時限制外框寬度
-        appContainer.style.maxWidth = "480px";
-        containerWidth = 480;
-    } else {
-        appContainer.style.maxWidth = "100%";
-    }
-
-    var baseWidth = 1204.71;
-    var scale = containerWidth / baseWidth;
-
-    wrapper.style.transform = "scale(" + scale + ")";
-    wrapper.style.width = baseWidth + "px";
-    
-    // 同步計算 SVG 連線
-    renderTrendSvg();
-}
-
 var activeNum = null;
 
-// 點擊紅圈切換「粗紅線」高亮
+// 切換高亮指定號碼走勢線 (點擊可高亮粗紅線，再點一次取消)
 function toggleHighlightLine(numStr) {
     if (activeNum === numStr) {
         activeNum = null;
@@ -382,7 +338,7 @@ if (typeof zzz !== 'undefined' && zzz.length > 0) lastDate = zzz[0][0];
     tfoot.innerHTML = H3;
 })();
 
-// 4. 動態對齊繪製貫穿線與走勢連線
+// 4. 精準對齊與純座標渲染 (不受瀏覽器螢幕拉大影響)
 function renderTrendSvg() {
     var table = document.getElementById("table");
     var container = document.querySelector('.table-container');
@@ -405,7 +361,7 @@ function renderTrendSvg() {
     svg.style.pointerEvents = "none";
     svg.style.zIndex = "1";
 
-    // 抓取表頭中心座標，繪製貫穿背景豎線
+    // 抓取表頭中心座標，畫貫穿背景豎線
     var headThs = table.querySelectorAll("#thead tr:last-child td");
     var xCenters = {};
 
@@ -479,9 +435,9 @@ function renderTrendSvg() {
     container.appendChild(svg);
 }
 
-// 啟動適應與渲染
-window.addEventListener('load', fitLayout);
-window.addEventListener('resize', fitLayout);
+// 載入與視窗調整監聽
+window.addEventListener('load', renderTrendSvg);
+window.addEventListener('resize', renderTrendSvg);
 </script>
 </body>
 </html>
